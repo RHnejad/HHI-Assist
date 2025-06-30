@@ -1,0 +1,10 @@
+numpy==1.24.4
+pandas==1.5.3
+torch==1.13.1
+torchvision==0.14.1
+tqdm==4.62.3
+matplotlib
+scipy
+quaternionic
+einops
+fastdtw
