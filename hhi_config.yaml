@@ -1,0 +1,17 @@
+# HHI Simulation Configuration
+# Specifies the BVH file pair to use for Generation and Visualization.
+
+# current_dataset:
+#   name: "AA_RM_FullAssist"
+#   description: "Caregiver AA assisting CareReceiver RM, Full Assist, Take 1"
+  
+#   cg_path: "/media/rh/codes/sim/HHI-Assist/hhi-assist/AA-RM/AA(CG)_RM(CR)_FullAssist_Take 1 [2023-07-26]_AA_50.bvh"
+#   cr_path: "/media/rh/codes/sim/HHI-Assist/hhi-assist/AA-RM/AA(CG)_RM(CR)_FullAssist_Take 1 [2023-07-26]_RM_50.bvh"
+
+# Alternative datasets (uncomment to switch):
+# # 
+current_dataset:
+  name: "BC_CC_SideAssist"
+  description: "Caregiver CC assisting CareReceiver BC, Side Assist, Take 1"
+  cg_path: "/media/rh/codes/sim/HHI-Assist/hhi-assist/BC-CC/CC(CG)_BC(CR)_SideAssist_Take 1 [2024-01-22]_CC_50.bvh"
+  cr_path: "/media/rh/codes/sim/HHI-Assist/hhi-assist/BC-CC/CC(CG)_BC(CR)_SideAssist_Take 1 [2024-01-22]_BC_50.bvh"

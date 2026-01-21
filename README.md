@@ -1,70 +1,44 @@
-<div align="center">
-<h1> HHI-Assist <br>  </h1>
+# HHI MJCF Generation Refactor Walkthrough
 
+The procedural generation code in [generate_hhi_mjcf.py](file:///media/rh/codes/sim/newton/hhi_g/generate_hhi_mjcf.py) has been completely refactored into an Object-Oriented structure using a [Body](file:///media/rh/codes/sim/newton/hhi_g/generate_hhi_mjcf.py#13-84) class. This improves maintainability and ensures robust handling of hierarchy and geometry.
 
+## Changes Verified
 
-This is the official code for the paper "HHI-Assist: A Dataset and Benchmark of Human-Human Interaction in Physical Assistance Scenario", accepted and published in IEEE Robotics and Automation Letters (RA-L), 2025.
+1.  **OOP Structure**:
+    -   Implemented [Body](file:///media/rh/codes/sim/newton/hhi_g/generate_hhi_mjcf.py#13-84) class to encapsulate bone logic, geometry, and BVH data.
+    -   Implemented [HHIModelGenerator](file:///media/rh/codes/sim/newton/hhi_g/generate_hhi_mjcf.py#133-388) to handle graph construction and XML generation.
+    -   All hierarchy logic is now driven by `BONE_MAPPING` in [hhi_utils.py](file:///media/rh/codes/sim/newton/hhi_g/hhi_utils.py).
 
-[[arXiv]()] [[webpage](https://sites.google.com/view/hhi-assist/home)]
+2.  **Geometry & Offsets**:
+    -   **Parent Body Geom**: Standard bone geometries (capsules) are correctly placed in the *parent* body's XML element.
+    -   **Element Order**: Link Geometries are now nested *inside* the Body element, matching standard conventions and ensuring local rotation.
+    -   **Kinematic Logic**: Adopted the logic where Body Position matches the **Parent's Offset**, and Geometry Length matches the **Current Offset**. This effectively places the Body frame at the *start* of the segment (Parent Joint) rather than the end.
+    -   **Head Sphere**: Vertical placement verified. The generated sphere is centered at `0.5 * Offset` with `Radius = 0.5 * Offset`, ensuring its top (tip) exactly reaches the EndSite offset as requested.
+    -   **Angle Ordering**: Implemented child body sorting by BVH index. This ensures that the generated XML structure (which dictates the joint order in Newton/MuJoCo) perfectly aligns with the BVH data channels, guaranteeing correct motion playback.
+    -   **Statistics**: Added automatic calculation and printing of **Total Character Mass** (approx. 49kg) and **Link Lengths** (in cm) during generation, using the Geom/Link name for clarity.
 
-<image src="docs/hhi2.jpg" width="600">
- 
+3.  **Visualization Fixes**:
+    -   Updated [run_hhi_vis.py](file:///media/rh/codes/sim/newton/hhi_g/run_hhi_vis.py) to correctly parse and load included XML files from the scene file, bypassing a limitation in the Newton simulator's MJCF parser.
+    -   Verified that the simulation loads with 134 DOFs (67 per robot).
+    -   Adjusted camera position (backed out to Y=-4.5m) to ensure full body visibility including feet.
 
-</div>
+## Visual Verification
 
-</br>
+The following preview shows the generated models in the Newton simulator (Static Pose at Frame 0):
 
+![HHI Scene Preview](file:///home/rh/.gemini/antigravity/brain/b2485cd7-3c46-4d26-9baa-e3d198ac4b4c/hhi_scene_preview.png)
 
-## Requirements
-The code requires Python 3.10 or later. The file [requirements.txt](requirements.txt) contains the full list of required Python modules.
+## Validation Commands Run
+
+```bash
+# Generate MJCFs
+uv run python generate_hhi_mjcf.py
+
+# Run Visualization (Static)
+uv run python run_hhi_vis.py --headless --static --start-frame 0
 ```
-pip install -r requirements.txt
-```
-## Data directory
-Data can be downloaded from [here](https://huggingface.co/datasets/jose-barreiros-tri/hhi-assist).
-- Data of Task1 and Task2 is split per caregiver and carereceiver sequences. (```AA-RM, AB-JB, ...```).
-- Data of Task3
-```
-|-- AA
-|-- AB
-|-- ...
-|-- SR
-|-- AA-RM
-|-- AB-JB
-|-- ...
-|-- SR-LPR
-|-- Task3
-```
 
-Convert bvh files to csv files by calling [bvh-converter](https://github.com/tekulvw/bvh-converter).
-
-
-## Training
-
-To train a model, use the following command:
-```python3 main.py --mode train --data-dir PATH_TO_DATA  --output_dir PATH_TP_OUTPUT --batch 256 --two --h 2 --joints 21 --epochs 50```
-
-## Test
-
-To evaluate a model, use the following command:
-```python3 main.py --mode test --data-dir PATH_TO_DATA  --output_dir PATH_TP_OUTPUT --batch 256 --two --h 2 --joints 21```
-
-
-
-
-
-## Acknowledgments
-
-The overall code framework (dataloading, training, testing etc.) was adapted from [DePOSit](https://github.com/vita-epfl/DePOSit/).
-
-### Citation
-
-
-```
-@article{saadatnejad2025hhiassist,
-  title={HHI-Assist: A Dataset and Benchmark of Human-Human Interaction in Physical Assistance Scenario},
-  author={Saadatnejad, Saeed and Hosseininejad, Reyhaneh and Barreiros, Jose and Tsui, Katherine and Alahi, Alexandre},
-  journal={IEEE Robotics and Automation Letters (RA-L)},
-  year={2025},
-  publisher={IEEE}
-}
+## Key Files
+- [generate_hhi_mjcf.py](file:///media/rh/codes/sim/newton/hhi_g/generate_hhi_mjcf.py): New OOP implementation.
+- [hhi_utils.py](file:///media/rh/codes/sim/newton/hhi_g/hhi_utils.py): Contains [Body](file:///media/rh/codes/sim/newton/hhi_g/generate_hhi_mjcf.py#13-84) mapping and [get_radius](file:///media/rh/codes/sim/newton/hhi_g/hhi_utils.py#94-97) helper.
+- [run_hhi_vis.py](file:///media/rh/codes/sim/newton/hhi_g/run_hhi_vis.py): Patched visualization script.
