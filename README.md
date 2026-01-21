@@ -26,7 +26,7 @@ The procedural generation code in [generate_hhi_mjcf.py](file:///media/rh/codes/
 
 The following preview shows the generated models in the Newton simulator (Static Pose at Frame 0):
 
-![HHI Scene Preview](file:///home/rh/.gemini/antigravity/brain/b2485cd7-3c46-4d26-9baa-e3d198ac4b4c/hhi_scene_preview.png)
+![HHI Scene Preview](./hhi_scene_preview.png)
 
 ## Validation Commands Run
 
